@@ -1,0 +1,4 @@
+- Generowanie losowe populacji startowej
+- Implementacja selekcji turniejowej
+- Implementacja krzyżowania w zależności od parametru k i prawdopodobieństwa Km
+- Implementacja mutacji z prawdopodobieństwem Pm
