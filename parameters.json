@@ -1,0 +1,7 @@
+{
+    "populations": 10,
+    "crossover_size": 2,
+    "crossover_probability": 0.3,
+    "mutation_probability":0.05,
+    "generations": 100
+}
