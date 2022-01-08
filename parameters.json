@@ -1,4 +1,5 @@
 {
+    "max_weight":70,
     "populations": 10,
     "crossover_size": 2,
     "crossover_probability": 0.3,
