@@ -1,62 +1,103 @@
-import sys, csv, getopt, json
-
+import sys, csv, getopt, json, random
+from random import randint
 from Population import Population
+from Individual import Individual
+
 
 def main(argv):
-    characteristic_file = ''
-    parameters_file = ''
-    
+    characteristic_file = ""
+    parameters_file = ""
+
     try:
-      opts, args = getopt.getopt(argv,"hc:p:",["characteristic=","parameters="])
+        opts, args = getopt.getopt(argv, "hc:p:", ["characteristic=", "parameters="])
     except getopt.GetoptError:
-      print("geneticAlgorithm.py -g <characteristic.csv> -p <parameters.json>")
-      sys.exit(2)
-      
+        print("geneticAlgorithm.py -c <characteristic.csv> -p <parameters.json>")
+        sys.exit(2)
+
     for opt, arg in opts:
-      if opt == '-h':
-         print("geneticAlgorithm.py -g <characteristic.csv> -p <parameters.json>")
-         sys.exit()
-      elif opt in ("-c", "--characteristic"):
-         characteristic_file = arg
-      elif opt in ("-p", "--parameters"):
-         parameters_file = arg
-    
+        if opt == "-h":
+            print("geneticAlgorithm.py -c <characteristic.csv> -p <parameters.json>")
+            sys.exit()
+        elif opt in ("-c", "--characteristic"):
+            characteristic_file = arg
+        elif opt in ("-p", "--parameters"):
+            parameters_file = arg
+
     if not (characteristic_file and parameters_file):
         print("Both files are required")
         sys.exit()
-        
+
     return characteristic_file, parameters_file
 
-def tournament_selection(population):
-    _
+
+def tournament_selection(population, tournament_size=3):
+    tournament = Population()
+
+    for i in range(tournament_size):
+        random_individual = randint(0, len(population.individuals))
+        tournament.individuals.append(population.get_at_idx(random_individual))
+
+    return tournament.get_the_best()
+
+
+def crossover(first_individual, second_individual, num_of_genes, propability):
+    new_first_ind = Individual()
+    new_second_ind = Individual()
+
+    if random.uniform(0.0, 1.0) > propability:
+        for i in range(num_of_genes):
+            new_first_ind.genes.append(first_individual.genes[i])
+            new_second_ind.genes.append(second_individual.genes[i])
+    else:
+        for i in range(num_of_genes):
+            new_first_ind.genes.append(second_individual.genes[i])
+            new_second_ind.genes.append(first_individual.genes[i])
+
+    if random.uniform(0.0, 1.0) > propability:
+        for i in range(num_of_genes, len(first_individual.genes)):
+            new_first_ind.genes.append(first_individual.genes[i])
+            new_second_ind.genes.append(second_individual.genes[i])
+    else:
+        for i in range(num_of_genes, len(first_individual.genes)):
+            new_first_ind.genes.append(second_individual.genes[i])
+            new_second_ind.genes.append(first_individual.genes[i])
+
+    return new_first_ind, new_second_ind
+
 
 if __name__ == "__main__":
     csv_file_name, json_file_name = main(sys.argv[1:])
-        
+
     csv_file = open(csv_file_name)
     csvreader = csv.reader(csv_file)
-    
-    csv_rows = [row for row in csvreader]    
-    
+
+    csv_rows = [row for row in csvreader]
+
     json_file = open(json_file_name)
     json_data = json.load(json_file)
-    
+
     # - Generowanie losowe populacji startowej
-    population = Population(json_data['populations'], len(csv_rows[0]))
-    
-# Działanie w pętli
-# - implementacja funkcji oceny przystosowania
-    population.fitness_calculation(json_data['max_weight'], 
-                                   csv_rows[0], csv_rows[1])
+    population = Population(json_data["populations"], len(csv_rows[0]))
+
+    # Działanie w pętli
+    # - implementacja funkcji oceny przystosowania
+    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
     # the_best = population.get_the_best()
-    
+
     # for i in range(len(the_best.genes)):
     #     print(the_best.get_gene_at_idx(i))
-    
-# - Implementacja selekcji turniejowej
 
-# - Implementacja krzyżowania w zależności od parametru k i prawdopodobieństwa Pk
+    # - Implementacja selekcji turniejowej
+    first_winner = tournament_selection(population)
+    second_winner = tournament_selection(population)
 
+    # - Implementacja krzyżowania w zależności od parametru k i prawdopodobieństwa Pk
+    crossover(
+        first_winner,
+        second_winner,
+        json_data["crossover_size"],
+        json_data["crossover_probability"],
+    )
 # - Implementacja mutacji z prawdopodobieństwem Pm
 
 # - Implementacja odrzucenia najgorszych osobników zastępując je potomstwem

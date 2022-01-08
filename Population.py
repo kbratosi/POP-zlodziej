@@ -1,7 +1,7 @@
 from Individual import Individual
 class Population():
     
-    def __init__(self, population_size, genome_size):
+    def __init__(self, population_size = 0, genome_size = 0):
         self.individuals = []
         
         for i in range (population_size):
@@ -26,4 +26,8 @@ class Population():
             if obj.fitness >= elite.fitness:
                 elite = obj
         return elite
+    
+    def get_at_idx(self, index):
+        return self.individuals[index]
+    
         

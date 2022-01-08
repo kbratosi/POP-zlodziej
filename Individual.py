@@ -1,7 +1,7 @@
 from random import randint
 class Individual():
     
-    def __init__(self, genome_size):
+    def __init__(self, genome_size = 0):
         self.genes = [None] * genome_size
         self.fitness = 0
         
