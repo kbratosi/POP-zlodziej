@@ -34,36 +34,35 @@ def tournament_selection(population, tournament_size=3):
     tournament = Population()
 
     for i in range(tournament_size):
-        random_individual = randint(0, len(population.individuals))
+        random_individual = randint(0, len(population.individuals)-1)
         tournament.individuals.append(population.get_at_idx(random_individual))
 
     return tournament.get_the_best()
 
 
 def crossover(first_individual, second_individual, num_of_genes, propability):
-    new_first_ind = Individual()
-    new_second_ind = Individual()
+    new_individual = Individual()
 
     if random.uniform(0.0, 1.0) > propability:
         for i in range(num_of_genes):
-            new_first_ind.genes.append(first_individual.genes[i])
-            new_second_ind.genes.append(second_individual.genes[i])
+            new_individual.genes.append(first_individual.genes[i])
     else:
         for i in range(num_of_genes):
-            new_first_ind.genes.append(second_individual.genes[i])
-            new_second_ind.genes.append(first_individual.genes[i])
+            new_individual.genes.append(second_individual.genes[i])
 
     if random.uniform(0.0, 1.0) > propability:
         for i in range(num_of_genes, len(first_individual.genes)):
-            new_first_ind.genes.append(first_individual.genes[i])
-            new_second_ind.genes.append(second_individual.genes[i])
+            new_individual.genes.append(first_individual.genes[i])
     else:
         for i in range(num_of_genes, len(first_individual.genes)):
-            new_first_ind.genes.append(second_individual.genes[i])
-            new_second_ind.genes.append(first_individual.genes[i])
+            new_individual.genes.append(second_individual.genes[i])
 
-    return new_first_ind, new_second_ind
+    return new_individual
 
+def mutate(individual, propability):
+    for i in range(len(individual.genes)):
+        if random.uniform(0.0, 1.0) > propability:
+            individual.change_gene_at_idx(i)
 
 if __name__ == "__main__":
     csv_file_name, json_file_name = main(sys.argv[1:])
@@ -80,24 +79,39 @@ if __name__ == "__main__":
     population = Population(json_data["populations"], len(csv_rows[0]))
 
     # Działanie w pętli
-    # - implementacja funkcji oceny przystosowania
-    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
-    # the_best = population.get_the_best()
+    num_of_generation = 0
+    while num_of_generation < json_data["generations"]:
+        
+        # - implementacja funkcji oceny przystosowania
+        population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+        
+            # the_best = population.get_the_best()
 
-    # for i in range(len(the_best.genes)):
-    #     print(the_best.get_gene_at_idx(i))
+            # for i in range(len(the_best.genes)):
+            #     print(the_best.get_gene_at_idx(i))
+        
+        # - Utworzenie nowej populacji 
+        next_population = Population()
+        
+        for i in range(len(population.individuals)):
 
-    # - Implementacja selekcji turniejowej
-    first_winner = tournament_selection(population)
-    second_winner = tournament_selection(population)
+            # - Implementacja selekcji turniejowej
+            first_winner = tournament_selection(population)
+            second_winner = tournament_selection(population)
 
-    # - Implementacja krzyżowania w zależności od parametru k i prawdopodobieństwa Pk
-    crossover(
-        first_winner,
-        second_winner,
-        json_data["crossover_size"],
-        json_data["crossover_probability"],
-    )
-# - Implementacja mutacji z prawdopodobieństwem Pm
-
-# - Implementacja odrzucenia najgorszych osobników zastępując je potomstwem
+            # - Implementacja krzyżowania w zależności od parametru k i prawdopodobieństwa Pk
+            new_individual = crossover(
+                first_winner,
+                second_winner,
+                json_data["crossover_size"],
+                json_data["crossover_probability"],
+            )
+            
+            next_population.individuals.append(new_individual)
+            
+        # - Implementacja mutacji z prawdopodobieństwem Pm
+        for i in range(len(population.individuals)):
+            mutate(next_population.individuals[i], json_data["mutation_probability"])
+            
+        population = next_population
+        num_of_generation += 1    
