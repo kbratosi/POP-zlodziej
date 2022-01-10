@@ -40,17 +40,19 @@ def tournament_selection(population, tournament_size=3):
     return tournament.get_the_best()
 
 
-def crossover(first_individual, second_individual, num_of_genes, propability):
+def crossover(first_individual, second_individual, probability):
     new_individual = Individual()
+    
+    num_of_genes = randint(1, len(first_individual.genes)-2)
 
-    if random.uniform(0.0, 1.0) > propability:
+    if random.uniform(0.0, 1.0) > probability:
         for i in range(num_of_genes):
             new_individual.genes.append(first_individual.genes[i])
     else:
         for i in range(num_of_genes):
             new_individual.genes.append(second_individual.genes[i])
 
-    if random.uniform(0.0, 1.0) > propability:
+    if random.uniform(0.0, 1.0) > probability:
         for i in range(num_of_genes, len(first_individual.genes)):
             new_individual.genes.append(first_individual.genes[i])
     else:
@@ -59,27 +61,17 @@ def crossover(first_individual, second_individual, num_of_genes, propability):
 
     return new_individual
 
-def mutate(individual, propability):
+def mutate(individual, probability):
     for i in range(len(individual.genes)):
-        if random.uniform(0.0, 1.0) <= propability:
+        if random.uniform(0.0, 1.0) <= probability:
             individual.change_gene_at_idx(i)
 
-if __name__ == "__main__":
-    csv_file_name, json_file_name = main(sys.argv[1:])
-
-    csv_file = open(csv_file_name)
-    csvreader = csv.reader(csv_file)
-
-    csv_rows = [row for row in csvreader]
-
-    json_file = open(json_file_name)
-    json_data = json.load(json_file)
-
-    # - Generowanie losowe populacji startowej
-    population = Population(json_data["populations"], len(csv_rows[0]))
+def genetic_algorithm(A, V, W, json_data):
+     # - Generowanie losowe populacji startowej
+    population = Population(json_data["populations"], len(A))
 
     # - implementacja funkcji oceny przystosowania
-    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+    population.fitness_calculation(W, A, V)
     
     # Działanie w pętli
     num_of_generation = 0
@@ -98,7 +90,6 @@ if __name__ == "__main__":
             new_individual = crossover(
                 first_winner,
                 second_winner,
-                json_data["crossover_size"],
                 json_data["crossover_probability"],
             )
             
@@ -108,7 +99,7 @@ if __name__ == "__main__":
         for i in range(len(population.individuals)):
             mutate(next_population.individuals[i], json_data["mutation_probability"])
         
-        next_population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+        next_population.fitness_calculation(W, A, V)
 
         population = next_population        
         num_of_generation += 1    
@@ -117,5 +108,19 @@ if __name__ == "__main__":
     answer = []
     for i in range(len(the_best.genes)):
         answer.append(the_best.genes[i])
-    print(answer)
-    print(the_best.fitness)
+
+    return answer, the_best.fitness
+
+if __name__ == "__main__":
+    csv_file_name, json_file_name = main(sys.argv[1:])
+
+    csv_file = open(csv_file_name)
+    csvreader = csv.reader(csv_file)
+
+    csv_rows = [row for row in csvreader]
+
+    json_file = open(json_file_name)
+    json_data = json.load(json_file)
+    
+    answer, fitness = genetic_algorithm(csv_rows[0], csv_rows[1], json_data)
+    print("{}, fitness: {}".format(answer, fitness))

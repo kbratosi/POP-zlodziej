@@ -29,12 +29,12 @@ def backpack_algorithm(A, V, W):
                 else:
                     P[i].append(copy.deepcopy(P[i - 1][j]))
     # convert answer to binary vector
-    binary_vector = ""
+    binary_vector = []
     for i in range(len(A)):
         if i in P[len(A)][W].index_list:
-            binary_vector += "1"
+            binary_vector.append(1)
         else:
-            binary_vector += "0"
+            binary_vector.append(0)
     return binary_vector, P[len(A)][W].score
 
 if __name__ == "__main__":
