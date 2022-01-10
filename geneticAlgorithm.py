@@ -78,12 +78,12 @@ if __name__ == "__main__":
     # - Generowanie losowe populacji startowej
     population = Population(json_data["populations"], len(csv_rows[0]))
 
+    # - implementacja funkcji oceny przystosowania
+    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+    
     # Działanie w pętli
     num_of_generation = 0
     while num_of_generation < json_data["generations"]:
-        
-        # - implementacja funkcji oceny przystosowania
-        population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
         
         # - Utworzenie nowej populacji 
         next_population = Population()
@@ -107,12 +107,15 @@ if __name__ == "__main__":
         # - Implementacja mutacji z prawdopodobieństwem Pm
         for i in range(len(population.individuals)):
             mutate(next_population.individuals[i], json_data["mutation_probability"])
-            
-        population = next_population
+        
+        next_population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+
+        population = next_population        
         num_of_generation += 1    
         
-    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
     the_best = population.get_the_best()
+    answer = []
     for i in range(len(the_best.genes)):
-        print(the_best.get_gene_at_idx(i))
+        answer.append(the_best.genes[i])
+    print(answer)
     print(the_best.fitness)
