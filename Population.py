@@ -19,6 +19,7 @@ class Population():
                 obj.fitness = 0
             else:
                 obj.fitness = fitness_value
+            # print("Print V: " + str(obj.fitness) + " AND W: " + str(weight_of_obj))
             
     def get_the_best(self):
         elite = self.individuals[0]

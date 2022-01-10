@@ -61,7 +61,7 @@ def crossover(first_individual, second_individual, num_of_genes, propability):
 
 def mutate(individual, propability):
     for i in range(len(individual.genes)):
-        if random.uniform(0.0, 1.0) > propability:
+        if random.uniform(0.0, 1.0) <= propability:
             individual.change_gene_at_idx(i)
 
 if __name__ == "__main__":
@@ -84,11 +84,6 @@ if __name__ == "__main__":
         
         # - implementacja funkcji oceny przystosowania
         population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
-        
-            # the_best = population.get_the_best()
-
-            # for i in range(len(the_best.genes)):
-            #     print(the_best.get_gene_at_idx(i))
         
         # - Utworzenie nowej populacji 
         next_population = Population()
@@ -115,3 +110,9 @@ if __name__ == "__main__":
             
         population = next_population
         num_of_generation += 1    
+        
+    population.fitness_calculation(json_data["max_weight"], csv_rows[0], csv_rows[1])
+    the_best = population.get_the_best()
+    for i in range(len(the_best.genes)):
+        print(the_best.get_gene_at_idx(i))
+    print(the_best.fitness)
