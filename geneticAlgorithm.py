@@ -109,7 +109,7 @@ def genetic_algorithm(A, V, W, json_data):
     for i in range(len(the_best.genes)):
         answer.append(the_best.genes[i])
 
-    return answer, int(the_best.fitness)
+    return answer, int(the_best.fitness), sum([answer[i] * A[i] for i in range(len(A))])
 
 if __name__ == "__main__":
     csv_file_name, json_file_name = main(sys.argv[1:])

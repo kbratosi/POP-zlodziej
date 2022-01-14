@@ -52,16 +52,16 @@ if __name__ == "__main__":
         print("A: {}\nV: {}\nW: {}".format(A, V, W))
         
         start_time_backpack = time.time()
-        b_answer, b_score = backpack_algorithm(A, V, W)
+        b_answer, b_score, b_final_weight = backpack_algorithm(A, V, W)
         elapsed_time_backpack = time.time() - start_time_backpack
 
-        print("Backpack:\nAnswer: {}\nScore: {}\nTime: {}".format(b_answer, b_score, elapsed_time_backpack))
+        print("Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(b_answer, b_final_weight, b_score, elapsed_time_backpack))
 
         start_time_genetic = time.time()
-        e_answer, e_score = genetic_algorithm(A, V, W, json_data)
+        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, json_data)
         elapsed_time_genetic = time.time() - start_time_genetic
 
-        print("Genetic algorithm:\nAnswer: {}\nScore: {}\nTime: {}".format(e_answer, e_score, elapsed_time_genetic))
+        print("Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(e_answer, e_final_weight, e_score, elapsed_time_genetic))
         
         row_to_save = [W, len(A), json_data["populations"], json_data["generations"],
                        json_data["crossover_probability"], json_data["mutation_probability"], 

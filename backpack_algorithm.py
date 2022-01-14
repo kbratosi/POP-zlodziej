@@ -30,12 +30,14 @@ def backpack_algorithm(A, V, W):
                     P[i].append(copy.deepcopy(P[i - 1][j]))
     # convert answer to binary vector
     binary_vector = []
+    final_weight = 0
     for i in range(len(A)):
         if i in P[len(A)][W].index_list:
             binary_vector.append(1)
+            final_weight += A[i]
         else:
             binary_vector.append(0)
-    return binary_vector, P[len(A)][W].score
+    return binary_vector, P[len(A)][W].score, final_weight
 
 if __name__ == "__main__":
     A = [1, 2, 3, 4, 5, 7, 10, 2]
