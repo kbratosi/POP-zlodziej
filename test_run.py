@@ -1,7 +1,7 @@
 from backpack_algorithm import backpack_algorithm
 from geneticAlgorithm import genetic_algorithm
 
-import argparse, json, time
+import argparse, json, time, csv
 import random
 
 parser = argparse.ArgumentParser(description="SK.POP.2 Złodziej test run")
@@ -40,6 +40,9 @@ if __name__ == "__main__":
 
     json_file = open(args.parameters)
     json_data = json.load(json_file)
+    
+    results_file = open("testResults.csv", "w")
+    write_to_file = csv.writer(results_file)
 
     for _ in range(args.num_iterations):
         A = [random.randint(1, 40) for _ in range(args.size)]
@@ -59,7 +62,12 @@ if __name__ == "__main__":
         elapsed_time_genetic = time.time() - start_time_genetic
 
         print("Genetic algorithm:\nAnswer: {}\nScore: {}\nTime: {}".format(e_answer, e_score, elapsed_time_genetic))
-
-        # b_answer == e_answer
-        # b_score == e_score
-        # save
+        
+        row_to_save = [W, len(A), json_data["populations"], json_data["generations"],
+                       json_data["crossover_probability"], json_data["mutation_probability"], 
+                       b_score, e_score, b_score == e_score, 
+                       elapsed_time_backpack, elapsed_time_genetic]
+        
+        write_to_file.writerow(row_to_save)
+        
+    results_file.close()
