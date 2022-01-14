@@ -2,11 +2,8 @@ from random import randint
 class Individual():
     
     def __init__(self, genome_size = 0):
-        self.genes = [None] * genome_size
+        self.genes = [randint(0,1) for _ in range(genome_size)]
         self.fitness = 0
-        
-        for i in range(genome_size):
-            self.genes[i] = randint(0,1)
             
     def get_gene_at_idx(self, index):
         return self.genes[index]

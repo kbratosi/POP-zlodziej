@@ -40,11 +40,11 @@ if __name__ == "__main__":
 
     json_file = open(args.parameters)
     json_data = json.load(json_file)
-    
+
     for _ in range(args.num_iterations):
         A = [random.randint(1, 40) for _ in range(args.size)]
         V = [random.randint(1, 120) for _ in range(args.size)]
-        W = random.randint(100, 300)
+        W = int(sum(A) * random.uniform(0.4, 0.6))
 
         print("A: {}\nV: {}\nW: {}".format(A, V, W))
         
@@ -54,11 +54,11 @@ if __name__ == "__main__":
 
         print("Backpack:\nAnswer: {}\nScore: {}\nTime: {}".format(b_answer, b_score, elapsed_time_backpack))
 
-        # start_time_genetic = time.time()
-        # e_answer, e_score = genetic_algorithm(A, V, W, json_data)
-        # elapsed_time_genetic = time.time() - start_time_genetic
+        start_time_genetic = time.time()
+        e_answer, e_score = genetic_algorithm(A, V, W, json_data)
+        elapsed_time_genetic = time.time() - start_time_genetic
 
-        # print("Genetic algorithm:\nAnswer: {}\nScore: {}\nTime: {}".format(e_answer, e_score, elapsed_time_genetic))
+        print("Genetic algorithm:\nAnswer: {}\nScore: {}\nTime: {}".format(e_answer, e_score, elapsed_time_genetic))
 
         # b_answer == e_answer
         # b_score == e_score

@@ -1,7 +1,6 @@
 {
-    "max_weight":17,
-    "populations": 20,
-    "crossover_probability": 0.4,
-    "mutation_probability":0.015,
-    "generations": 100000
+    "populations": 80,
+    "crossover_probability": 0.25,
+    "mutation_probability": 0.01,
+    "generations": 3000
 }
