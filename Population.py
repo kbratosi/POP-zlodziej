@@ -14,7 +14,7 @@ class Population():
                 weight_of_obj += obj.genes[i] * float(weight_params[i])
             
             if weight_of_obj > max_weight:
-                obj.fitness = 0
+                obj.fitness = max_weight - weight_of_obj
             else:
                 fitness_value = 0
                 for i in range(len(weight_params)):

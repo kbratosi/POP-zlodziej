@@ -66,16 +66,17 @@ def mutate(individual, probability):
         if random.uniform(0.0, 1.0) <= probability:
             individual.change_gene_at_idx(i)
 
-def genetic_algorithm(A, V, W, json_data):
+def genetic_algorithm(A, V, W, json_data, populations, generations):
      # - Generowanie losowe populacji startowej
-    population = Population(json_data["populations"], len(A))
-
+    population = Population(populations, len(A))
+ 
     # - implementacja funkcji oceny przystosowania
     population.fitness_calculation(W, A, V)
     
     # Działanie w pętli
     num_of_generation = 0
-    while num_of_generation < json_data["generations"]:
+        
+    while num_of_generation < generations:
         
         # - Utworzenie nowej populacji 
         next_population = Population()

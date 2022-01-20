@@ -34,6 +34,23 @@ parser.add_argument(
     required=False,
     default="./output.log"
 )
+parser.add_argument(
+    "-pop",
+    "--populations",
+    help="Number of populations",
+    type=int,
+    required=False,
+    default=0
+)
+parser.add_argument(
+    "-g",
+    "--generations",
+    help="Number of generations",
+    type=int,
+    required=False,
+    default=0
+)
+
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -41,15 +58,28 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("testResults.csv", "w")
+    results_file = open("toBin.csv", "a")
     write_to_file = csv.writer(results_file)
+    
+    # W = 1006
 
     for _ in range(args.num_iterations):
         A = [random.randint(1, 40) for _ in range(args.size)]
         V = [random.randint(1, 120) for _ in range(args.size)]
         W = int(sum(A) * random.uniform(0.4, 0.6))
-
+        
+        if(args.populations == 0):
+            populations_to_save = json_data["populations"]
+        else:
+            populations_to_save = args.populations
+            
+        if(args.generations == 0):
+            generations_to_save = json_data["generations"]
+        else:
+            generations_to_save = args.generations
+        
         print("A: {}\nV: {}\nW: {}".format(A, V, W))
+        # print(W)
         
         start_time_backpack = time.time()
         b_answer, b_score, b_final_weight = backpack_algorithm(A, V, W)
@@ -58,15 +88,17 @@ if __name__ == "__main__":
         print("Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(b_answer, b_final_weight, b_score, elapsed_time_backpack))
 
         start_time_genetic = time.time()
-        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, json_data)
+        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, json_data, populations_to_save, generations_to_save)
         elapsed_time_genetic = time.time() - start_time_genetic
 
         print("Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(e_answer, e_final_weight, e_score, elapsed_time_genetic))
         
-        row_to_save = [W, len(A), json_data["populations"], json_data["generations"],
+        
+        row_to_save = [W, len(A), populations_to_save, generations_to_save,
                        json_data["crossover_probability"], json_data["mutation_probability"], 
                        b_score, e_score, b_score == e_score, 
                        elapsed_time_backpack, elapsed_time_genetic]
+        
         
         write_to_file.writerow(row_to_save)
         
