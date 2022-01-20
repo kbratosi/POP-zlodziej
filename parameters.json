@@ -1,6 +1,6 @@
 {
-    "populations": 100,
-    "crossover_probability": 0.3,
+    "populations": 2000,
+    "crossover_probability": 0.25,
     "mutation_probability": 0.01,
-    "generations": 10000
+    "generations": 180
 }
