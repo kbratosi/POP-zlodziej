@@ -1,5 +1,5 @@
 from backpack_algorithm_mod import backpack_algorithm
-from geneticAlgorithm import genetic_algorithm
+from geneticAlgorithmMod import genetic_algorithm
 
 import argparse, json, time, csv
 import random
@@ -58,6 +58,23 @@ parser.add_argument(
     required=False,
     default=0
 )
+parser.add_argument(
+    "-c",
+    "--crossover",
+    help="Crossover probability",
+    type=int,
+    required=False,
+    default=-1
+)
+parser.add_argument(
+    "-m",
+    "--mutation",
+    help="Mutation probability",
+    type=int,
+    required=False,
+    default=-1
+)
+
 
 
 if __name__ == "__main__":
@@ -66,7 +83,7 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("pop_test_rep_two.csv", "a")
+    results_file = open("mut_test_rep_two.csv", "a")
     write_to_file = csv.writer(results_file)
     
     # W = 1006
@@ -88,8 +105,19 @@ if __name__ == "__main__":
             generations_to_save = json_data["generations"]
         else:
             generations_to_save = args.generations
+            
+        if(args.crossover < 0):
+            crossover_to_save = json_data["crossover_probability"]
+        else:
+            crossover_to_save = args.crossover/100
+            
+        if(args.mutation < 0):
+            mutation_to_save = json_data["mutation_probability"]
+        else:
+            mutation_to_save = args.mutation/100
         
         print("A: {}\nV: {}\nW: {}".format(A, V, W))
+        print(mutation_to_save)
         # print(W)
         
         start_time_backpack = time.time()
@@ -99,14 +127,14 @@ if __name__ == "__main__":
         print("Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(b_answer, b_final_weight, b_score, elapsed_time_backpack))
 
         start_time_genetic = time.time()
-        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, json_data, populations_to_save, generations_to_save)
+        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, populations_to_save, generations_to_save, crossover_to_save, mutation_to_save)
         elapsed_time_genetic = time.time() - start_time_genetic
 
         print("Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(e_answer, e_final_weight, e_score, elapsed_time_genetic))
         print()
         
         row_to_save = [W, len(A), populations_to_save, generations_to_save,
-                       json_data["crossover_probability"], json_data["mutation_probability"], 
+                       crossover_to_save, mutation_to_save, 
                        b_score, e_score, b_score == e_score, 
                        elapsed_time_backpack, elapsed_time_genetic]
         

@@ -1,4 +1,4 @@
-from backpack_algorithm_mod import backpack_algorithm
+from backpack_algorithm import backpack_algorithm
 from geneticAlgorithm import genetic_algorithm
 
 import argparse, json, time, csv
@@ -66,7 +66,7 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("pop_test_rep_two.csv", "a")
+    results_file = open("weight_test_rep_two.csv", "a")
     write_to_file = csv.writer(results_file)
     
     # W = 1006

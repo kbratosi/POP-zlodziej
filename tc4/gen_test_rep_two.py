@@ -66,7 +66,7 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("pop_test_rep_two.csv", "a")
+    results_file = open("gen_test_rep_two.csv", "a")
     write_to_file = csv.writer(results_file)
     
     # W = 1006

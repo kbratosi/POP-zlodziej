@@ -1,4 +1,4 @@
-from backpack_algorithm import backpack_algorithm
+from backpack_algorithm_mod import backpack_algorithm
 from geneticAlgorithm import genetic_algorithm
 
 import argparse, json, time, csv
