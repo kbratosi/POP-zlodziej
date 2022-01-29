@@ -52,7 +52,7 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("default_name.csv", "a")
+    results_file = open(args.output, "a")
     write_to_file = csv.writer(results_file)
 
     for _ in range(args.num_tests):
