@@ -6,20 +6,10 @@ import random
 
 parser = argparse.ArgumentParser(description="SK.POP.2 Złodziej test suite")
 parser.add_argument(
-    "-i",
-    "--input",
-    help="Path to input .csv",
-    type=str,
-    required=False,
-    default=None
+    "-i", "--input", help="Path to input .csv", type=str, required=False, default=None
 )
 parser.add_argument(
-    "-o",
-    "--output",
-    help="Path to output .csv",
-    type=str,
-    required=False,
-    default="./output.csv"
+    "-o", "--output", help="Path to output .csv", type=str, required=False, default="./output.csv"
 )
 parser.add_argument(
     "-p",
@@ -29,12 +19,7 @@ parser.add_argument(
     required=True,
 )
 parser.add_argument(
-    "-n",
-    "--num_tests",
-    help="Number of test iterations",
-    type=int,
-    required=False,
-    default=1
+    "-n", "--num_tests", help="Number of test iterations", type=int, required=False, default=1
 )
 parser.add_argument(
     "-r",
@@ -43,7 +28,7 @@ parser.add_argument(
     metavar="SIZE",
     type=int,
     required=False,
-    default=0
+    default=0,
 )
 
 if __name__ == "__main__":
@@ -51,46 +36,63 @@ if __name__ == "__main__":
 
     json_file = open(args.parameters)
     json_data = json.load(json_file)
-    
+
     results_file = open(args.output, "a")
     write_to_file = csv.writer(results_file)
 
     for _ in range(args.num_tests):
-        if (args.randomize > 0):
+        if args.randomize > 0:
             A = [random.randint(1, 40) for _ in range(args.randomize)]
             V = [random.randint(1, 120) for _ in range(args.randomize)]
             X = int(sum(A) * random.uniform(0.4, 0.6))
         else:
-            csv_file = open(args.output)
+            csv_file = open(args.input)
             csvreader = csv.reader(csv_file)
 
             csv_rows = [row for row in csvreader]
-            A = csv_rows[0]
-            V = csv_rows[1]
-            X = csv_rows[2]
-            
+            A = [int(a) for a in csv_rows[0]]
+            V = [int(v) for v in csv_rows[1]]
+            X = int(csv_rows[2][0])
+
             csv_file.close()
-        
+
         print("A: {}\nV: {}\nW: {}".format(A, V, X))
-        
+
         start_time_backpack = time.time()
         b_answer, b_score, b_final_weight = backpack_algorithm(A, V, X)
         elapsed_time_backpack = time.time() - start_time_backpack
 
-        print("Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(b_answer, b_final_weight, b_score, elapsed_time_backpack))
+        print(
+            "Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(
+                b_answer, b_final_weight, b_score, elapsed_time_backpack
+            )
+        )
 
         start_time_genetic = time.time()
         e_answer, e_score, e_final_weight = genetic_algorithm(A, V, X, json_data)
         elapsed_time_genetic = time.time() - start_time_genetic
 
-        print("Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(e_answer, e_final_weight, e_score, elapsed_time_genetic))
+        print(
+            "Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(
+                e_answer, e_final_weight, e_score, elapsed_time_genetic
+            )
+        )
         print()
-        
-        row_to_save = [X, len(A), json_data["populations"], json_data["generations"],
-                       json_data["crossover_probability"], json_data["mutation_probability"], 
-                       b_score, e_score, b_score == e_score, 
-                       elapsed_time_backpack, elapsed_time_genetic]        
-        
+
+        row_to_save = [
+            X,
+            len(A),
+            json_data["populations"],
+            json_data["generations"],
+            json_data["crossover_probability"],
+            json_data["mutation_probability"],
+            b_score,
+            e_score,
+            b_score == e_score,
+            elapsed_time_backpack,
+            elapsed_time_genetic,
+        ]
+
         write_to_file.writerow(row_to_save)
-        
+
     results_file.close()

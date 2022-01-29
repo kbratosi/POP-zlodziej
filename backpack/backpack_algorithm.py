@@ -10,11 +10,11 @@ class Field:
         return str(self.index)
 
 
-def backpack_algorithm(A, V, W):
-    P = [[Field(index) for _ in range(W + 1)] for index in range(len(A) + 1)]
+def backpack_algorithm(A, V, X):
+    P = [[Field(index) for _ in range(X + 1)] for index in range(len(A) + 1)]
 
     for i in range(1, len(A) + 1):
-        for j in range(1, W + 1):
+        for j in range(1, X + 1):
             if A[i - 1] > j:
                 P[i][j] = P[i - 1][j]
             else:
@@ -27,7 +27,7 @@ def backpack_algorithm(A, V, W):
                     P[i][j] = P[i - 1][j]
 
     index_list = []
-    curr_field = P[len(A)][W]
+    curr_field = P[len(A)][X]
     while curr_field.prev_field is not None:
         index_list.append(curr_field.index - 1)
         curr_field = curr_field.prev_field
@@ -42,13 +42,13 @@ def backpack_algorithm(A, V, W):
             final_weight += A[i]
         else:
             binary_vector.append(0)
-    return binary_vector, P[len(A)][W].score, final_weight
+    return binary_vector, P[len(A)][X].score, final_weight
 
 
 if __name__ == "__main__":
     A = [1, 2, 3, 4, 5, 7, 10, 2]
     V = [10, 8, 9, 4, 4, 13, 4, 9]
-    W = 17
+    X = 17
 
-    answer, score, weight = backpack_algorithm(A, V, W)
+    answer, score, weight = backpack_algorithm(A, V, X)
     print("score: {}, answer: {}, weight: {}".format(score, answer, weight))
