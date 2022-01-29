@@ -1,8 +1,8 @@
+from .population import Population
+from .individual import Individual
+
 import sys, csv, getopt, json, random
 from random import randint
-from Population import Population
-from Individual import Individual
-
 
 def main(argv):
     characteristic_file = ""
@@ -66,9 +66,9 @@ def mutate(individual, probability):
         if random.uniform(0.0, 1.0) <= probability:
             individual.change_gene_at_idx(i)
 
-def genetic_algorithm(A, V, W, populations, generations, crossover_p, mutation_p):
+def genetic_algorithm(A, V, W, json_data):
      # - Generowanie losowe populacji startowej
-    population = Population(populations, len(A))
+    population = Population(json_data["populations"], len(A))
  
     # - implementacja funkcji oceny przystosowania
     population.fitness_calculation(W, A, V)
@@ -76,7 +76,7 @@ def genetic_algorithm(A, V, W, populations, generations, crossover_p, mutation_p
     # Działanie w pętli
     num_of_generation = 0
         
-    while num_of_generation < generations:
+    while num_of_generation < json_data["generations"]:
         
         # - Utworzenie nowej populacji 
         next_population = Population()
@@ -91,14 +91,14 @@ def genetic_algorithm(A, V, W, populations, generations, crossover_p, mutation_p
             new_individual = crossover(
                 first_winner,
                 second_winner,
-                crossover_p,
+                json_data["crossover_probability"],
             )
             
             next_population.individuals.append(new_individual)
             
         # - Implementacja mutacji z prawdopodobieństwem Pm
         for i in range(len(population.individuals)):
-            mutate(next_population.individuals[i], mutation_p)
+            mutate(next_population.individuals[i], json_data["mutation_probability"])
         
         next_population.fitness_calculation(W, A, V)
 

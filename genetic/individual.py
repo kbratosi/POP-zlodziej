@@ -1,6 +1,7 @@
 from random import randint
-class Individual():
-    
+
+
+class Individual():    
     def __init__(self, genome_size = 0):
         self.genes = [randint(0,1) for _ in range(genome_size)]
         self.fitness = 0

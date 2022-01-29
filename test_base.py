@@ -1,10 +1,26 @@
-from backpack_algorithm_mod import backpack_algorithm
-from geneticAlgorithmMod import genetic_algorithm
+from backpack.backpack_algorithm import backpack_algorithm
+from genetic.genetic_algorithm import genetic_algorithm
 
 import argparse, json, time, csv
 import random
 
-parser = argparse.ArgumentParser(description="SK.POP.2 Złodziej test run")
+parser = argparse.ArgumentParser(description="SK.POP.2 Złodziej test suite")
+parser.add_argument(
+    "-i",
+    "--input",
+    help="Path to input .csv",
+    type=str,
+    required=False,
+    default=None
+)
+parser.add_argument(
+    "-o",
+    "--output",
+    help="Path to output .csv",
+    type=str,
+    required=False,
+    default="./output.csv"
+)
 parser.add_argument(
     "-p",
     "--parameters",
@@ -14,68 +30,21 @@ parser.add_argument(
 )
 parser.add_argument(
     "-n",
-    "--num_iterations",
+    "--num_tests",
+    help="Number of test iterations",
     type=int,
     required=False,
-    default=5
+    default=1
 )
 parser.add_argument(
-    "-s",
-    "--size",
-    help="Problem size",
-    type=int,
-    required=True
-)
-parser.add_argument(
-    "-o",
-    "--output",
-    help="Path to output log",
-    type=str,
-    required=False,
-    default="./output.log"
-)
-parser.add_argument(
-    "-pop",
-    "--populations",
-    help="Number of populations",
+    "-r",
+    "--randomize",
+    help="Generate random A, V arrays of specified length and random X value",
+    metavar="SIZE",
     type=int,
     required=False,
     default=0
 )
-parser.add_argument(
-    "-g",
-    "--generations",
-    help="Number of generations",
-    type=int,
-    required=False,
-    default=0
-)
-parser.add_argument(
-    "-w",
-    "--weight",
-    help="Maximum weight",
-    type=int,
-    required=False,
-    default=0
-)
-parser.add_argument(
-    "-c",
-    "--crossover",
-    help="Crossover probability",
-    type=float,
-    required=False,
-    default=0
-)
-parser.add_argument(
-    "-m",
-    "--mutation",
-    help="Mutation probability",
-    type=float,
-    required=False,
-    default=0.0
-)
-
-
 
 if __name__ == "__main__":
     args = parser.parse_args()
@@ -83,61 +52,44 @@ if __name__ == "__main__":
     json_file = open(args.parameters)
     json_data = json.load(json_file)
     
-    results_file = open("rubbish.csv", "a")
+    results_file = open("default_name.csv", "a")
     write_to_file = csv.writer(results_file)
-    
-    # W = 1006
 
-    for _ in range(args.num_iterations):
-        A = [random.randint(1, 40) for _ in range(args.size)]
-        V = [random.randint(1, 120) for _ in range(args.size)]
-        if (args.weight > 0):
-            W = args.weight
+    for _ in range(args.num_tests):
+        if (args.randomize > 0):
+            A = [random.randint(1, 40) for _ in range(args.randomize)]
+            V = [random.randint(1, 120) for _ in range(args.randomize)]
+            X = int(sum(A) * random.uniform(0.4, 0.6))
         else:
-            W = int(sum(A) * random.uniform(0.4, 0.6))
+            csv_file = open(args.output)
+            csvreader = csv.reader(csv_file)
+
+            csv_rows = [row for row in csvreader]
+            A = csv_rows[0]
+            V = csv_rows[1]
+            X = csv_rows[2]
+            
+            csv_file.close()
         
-        if(args.populations == 0):
-            populations_to_save = json_data["populations"]
-        else:
-            populations_to_save = args.populations
-            
-        if(args.generations == 0):
-            generations_to_save = json_data["generations"]
-        else:
-            generations_to_save = args.generations
-            
-        if(args.crossover == 0):
-            crossover_to_save = json_data["crossover_probability"]
-        else:
-            crossover_to_save = args.crossover
-            
-        if(args.mutation == 0):
-            mutation_to_save = json_data["mutation_probability"]
-        else:
-            mutation_to_save = args.mutation
-        
-        print("A: {}\nV: {}\nW: {}".format(A, V, W))
-        print(mutation_to_save)
-        # print(W)
+        print("A: {}\nV: {}\nW: {}".format(A, V, X))
         
         start_time_backpack = time.time()
-        b_answer, b_score, b_final_weight = backpack_algorithm(A, V, W)
+        b_answer, b_score, b_final_weight = backpack_algorithm(A, V, X)
         elapsed_time_backpack = time.time() - start_time_backpack
 
         print("Backpack:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(b_answer, b_final_weight, b_score, elapsed_time_backpack))
 
         start_time_genetic = time.time()
-        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, W, populations_to_save, generations_to_save, crossover_to_save, mutation_to_save)
+        e_answer, e_score, e_final_weight = genetic_algorithm(A, V, X, json_data)
         elapsed_time_genetic = time.time() - start_time_genetic
 
         print("Genetic algorithm:\nAnswer: {}\nFinal weight: {}\nScore: {}\nTime: {}".format(e_answer, e_final_weight, e_score, elapsed_time_genetic))
         print()
         
-        row_to_save = [W, len(A), populations_to_save, generations_to_save,
-                       crossover_to_save, mutation_to_save, 
+        row_to_save = [X, len(A), json_data["populations"], json_data["generations"],
+                       json_data["crossover_probability"], json_data["mutation_probability"], 
                        b_score, e_score, b_score == e_score, 
-                       elapsed_time_backpack, elapsed_time_genetic]
-        
+                       elapsed_time_backpack, elapsed_time_genetic]        
         
         write_to_file.writerow(row_to_save)
         

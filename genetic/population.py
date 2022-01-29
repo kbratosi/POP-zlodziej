@@ -1,4 +1,4 @@
-from Individual import Individual
+from .individual import Individual
 class Population():
     
     def __init__(self, population_size = 0, genome_size = 0):
