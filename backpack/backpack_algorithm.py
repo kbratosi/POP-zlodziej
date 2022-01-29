@@ -1,4 +1,6 @@
 class Field:
+    """Klasa przechowująca wynik rozwiązania cząstkowego oraz referencję na poprzednika"""
+
     def __init__(self, index, score=0, prev_field=None):
         self.score = score
         self.index = index
@@ -30,7 +32,8 @@ def backpack_algorithm(A, V, W):
         index_list.append(curr_field.index - 1)
         curr_field = curr_field.prev_field
     index_list.reverse()
-    # convert answer to binary vector
+
+    # Konwersja wyniku na wektor binarny
     binary_vector = []
     final_weight = 0
     for i in range(len(A)):

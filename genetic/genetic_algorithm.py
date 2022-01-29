@@ -33,7 +33,7 @@ def main(argv):
 def tournament_selection(population, tournament_size=3):
     tournament = Population()
 
-    for i in range(tournament_size):
+    for _ in range(tournament_size):
         random_individual = randint(0, len(population.individuals)-1)
         tournament.individuals.append(population.get_at_idx(random_individual))
 
